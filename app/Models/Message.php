@@ -8,18 +8,25 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  *
  */
-class User extends BaseModel
+class Message extends BaseModel
 {
     /**
      * @var string[]
      */
     protected $fillable = [
+        'ref_message_status',
         'ref_user_type',
-        'full_name',
-        'phone_number',
-        'email',
+        'content',
         'active'
     ];
+
+    /**
+     * @return BelongsTo
+     */
+    public function messageStatus(): BelongsTo
+    {
+        return $this->belongsTo(MessageStatus::class, 'ref_message_status');
+    }
 
     /**
      * @return BelongsTo
