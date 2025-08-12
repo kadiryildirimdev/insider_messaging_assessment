@@ -108,3 +108,8 @@ API endpointleri Swagger/OpenAPI ile dokümante edilmiştir. Dokümana aşağıd
 
 Aşağıdaki URL üzerinden webhook'a erişebilirsiniz.  
 [https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54](https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54)
+
+## ER Diagramı
+
+Aşağıdaki URL üzerinden ER Diagramına erişebilirsiniz.  
+[https://dbdiagram.io/d/Insider-Messaging-Assessment-689bc3e81d75ee360a4f7290](https://dbdiagram.io/d/Insider-Messaging-Assessment-689bc3e81d75ee360a4f7290)
