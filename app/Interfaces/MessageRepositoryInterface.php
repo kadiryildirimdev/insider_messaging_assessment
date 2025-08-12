@@ -5,9 +5,12 @@ namespace App\Interfaces;
 use App\Models\Message;
 use App\Models\MessageStatus;
 use App\Models\UserType;
+use Illuminate\Database\Eloquent\Collection;
 
 interface MessageRepositoryInterface
 {
+    public function createBulk(array $data): ?Message;
+
     public function create(array $data): ?Message;
 
     public function update(string $id, array $data): bool;
@@ -21,4 +24,6 @@ interface MessageRepositoryInterface
     public function findMessageStatusByCode(string $code): ?MessageStatus;
 
     public function getUsersByUserType(string $userTypeId): ?array;
+
+    public function getPendingMessages(): ?Collection;
 }

@@ -7,10 +7,11 @@ use App\Models\Message;
 use App\Models\MessageStatus;
 use App\Models\User;
 use App\Models\UserType;
+use Illuminate\Database\Eloquent\Collection;
 
 class MessageRepository implements MessageRepositoryInterface
 {
-    public function create(array $data): ?Message
+    public function createBulk(array $data): ?Message
     {
         try{
             $message = Message::create($data);
@@ -21,6 +22,22 @@ class MessageRepository implements MessageRepositoryInterface
                     'phone_number' => $receiver['phone_number']
                 ]);
             }
+
+            return $message;
+
+        }catch (\Exception $exception){
+            return null;
+        }
+    }
+
+    public function create(array $data): ?Message
+    {
+        try{
+            $message = Message::create($data);
+
+            $message->messageReceivers()->create([
+                'phone_number' => $data['phone_number']
+            ]);
 
             return $message;
 
@@ -73,4 +90,14 @@ class MessageRepository implements MessageRepositoryInterface
         return User::where('ref_user_type', $userTypeId)->get()->toArray();
     }
 
+    public function getPendingMessages(): ?Collection
+    {
+        return Message::with(['messageStatus', 'userType',
+            'messageReceivers' => function($query) {
+                $query->whereNull('sent_at');
+            },
+            'messageReceivers.user', 'createdBy', 'updatedBy'])
+            ->orderBy('created_at')
+            ->get();
+    }
 }

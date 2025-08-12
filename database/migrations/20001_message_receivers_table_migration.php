@@ -18,7 +18,7 @@ return new class extends Migration
             $table->uuid('ref_message')->nullable()->comment('Referans Mesaj');
             $table->uuid('ref_user')->nullable()->comment('Referans Kullanıcı');
             $table->string('phone_number', 14)->comment('Telefon Numarası');
-            $table->dateTime('send_at')->nullable()->comment('Oluşturan Kullanıcı');
+            $table->dateTime('sent_at')->nullable()->comment('Gönderim Zamanı');
             $table->uuid('created_by')->nullable()->comment('Oluşturan Kullanıcı');
             $table->uuid('updated_by')->nullable()->comment('Güncelleyen Kullanıcı');
             $table->uuid('deleted_by')->nullable()->comment('Silen Kullanıcı');

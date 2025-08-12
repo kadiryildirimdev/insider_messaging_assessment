@@ -6,6 +6,7 @@ use App\DTOs\MessageDTO;
 use App\Enums\MessageStatusEnum;
 use App\Interfaces\MessageRepositoryInterface;
 use App\Interfaces\MessageServiceInterface;
+use App\Jobs\SendMessageJob;
 use App\Requests\CreateBulkMessageRequest;
 use App\Requests\CreateMessageRequest;
 use App\Requests\ListMessageRequest;
@@ -55,7 +56,7 @@ class MessageService implements MessageServiceInterface
             $request->merge(['ref_message_status' => $messageStatus->id]);
             $request->merge(['message_receivers' => $users]);
 
-            $message = $this->messageRepository->create($request->toArray());
+            $message = $this->messageRepository->createBulk($request->toArray());
 
             if ($message === null) {
                 DB::rollback();
@@ -67,6 +68,8 @@ class MessageService implements MessageServiceInterface
             $dto = new MessageDTO($message->toArray());
 
             DB::commit();
+
+            SendMessageJob::dispatch($message->id);
 
             return $this->response->createResponse(data: $dto->toArray());
         } catch (\Throwable $e) {
