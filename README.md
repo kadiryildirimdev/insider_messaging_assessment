@@ -106,5 +106,5 @@ API endpointleri Swagger/OpenAPI ile dokümante edilmiştir. Dokümana aşağıd
 
 ## WebHook Bilgisi
 
-Aşağıdaki URL üzerinden webhook'a erişebilirsiniz.
+Aşağıdaki URL üzerinden webhook'a erişebilirsiniz.  
 [https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54](https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54)
