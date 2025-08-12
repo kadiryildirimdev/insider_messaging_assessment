@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Random\RandomException;
 
@@ -58,11 +59,18 @@ class SendMessageJob implements ShouldQueue
                 print_r("\r\nGÖNDERME BAŞARILI ---> Mesaj #" . $message->id . " " . $receiver->phone_number . " numarasına mesaj gönderildi.\r\n");
                 $counter--;
 
-                Cache::store('redis')->put("message_{$message->id}", [
+                $data = [
                     'message_id' => $message->id,
                     'message_receiver_id' => $receiver->id,
-                    'sent_at' => $now,
-                ], 3600);
+                    'phone_number' => $receiver->phone_number,
+                    'sent_at' => now()->toDateTimeString()
+                ];
+
+                $key = "messages_{$message->id}";
+
+                Redis::rpush($key, json_encode($data));
+
+                Redis::expire($key, 600);
             } else {
                 print_r("\r\nGÖNDERME BAŞARISIZ ---> Mesaj #{$message->id} {$receiver->phone_number} numarasına mesaj gönderilemedi.\r\n");
             }
