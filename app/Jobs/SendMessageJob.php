@@ -4,15 +4,15 @@ namespace App\Jobs;
 
 use App\Enums\MessageStatusEnum;
 use App\Interfaces\MessageRepositoryInterface;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Str;
-use Random\RandomException;
 
 class SendMessageJob implements ShouldQueue
 {
@@ -49,11 +49,13 @@ class SendMessageJob implements ShouldQueue
         $pendingReceivers = $message->messageReceivers()->whereNull('sent_at')->limit(2)->get();
 
         foreach ($pendingReceivers as $receiver) {
-            $result = $this->sendMessage();
+            $response = $this->sendMessage($receiver->phone_number, $message->content);
 
-            if ($result !== null) {
+            $result = json_decode($response, true, 512, JSON_THROW_ON_ERROR);
+
+            if ($result['message'] === "Accepted") {
                 $now = \Carbon\Carbon::now();
-                $receiver->transaction_id = $result;
+                $receiver->transaction_id = $result['messageId'];
                 $receiver->sent_at = $now;
                 $receiver->save();
                 print_r("\r\nGÖNDERME BAŞARILI ---> Mesaj #" . $message->id . " " . $receiver->phone_number . " numarasına mesaj gönderildi.\r\n");
@@ -72,6 +74,7 @@ class SendMessageJob implements ShouldQueue
 
                 Redis::expire($key, 600);
             } else {
+                Log::warning('PATLADIIIK');
                 print_r("\r\nGÖNDERME BAŞARISIZ ---> Mesaj #{$message->id} {$receiver->phone_number} numarasına mesaj gönderilemedi.\r\n");
             }
         }
@@ -96,18 +99,20 @@ class SendMessageJob implements ShouldQueue
     }
 
     /**
-     * Parameters will be determined
+     * @param string $phoneNumber
+     * @param string $content
      * @return string|null
-     * @throws RandomException
+     * @throws Exception
      */
-    public function sendMessage(): ?string
+    public function sendMessage(string $phoneNumber, string $content): ?string
     {
-        // TODO: sending message will be implemented in this function
-        $result = (bool)random_int(0, 1);
-        if ($result) {
-            return Str::uuid();
-        }
-
-        return null;
+        return Http::withHeaders([
+            'Content-Type' => 'application/json',
+        ])->send('POST', 'https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54', [
+            'body' => json_encode([
+                'to' => $phoneNumber,
+                'content' => $content,
+            ], JSON_THROW_ON_ERROR),
+        ]);
     }
 }
