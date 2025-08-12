@@ -16,6 +16,7 @@ class MessageReceiver extends BaseModel
         'transaction_id',
         'ref_message',
         'ref_user',
+        'phone_number',
         'send_at',
         'active'
     ];

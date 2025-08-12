@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\MessageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/messages/createBulk', [MessageController::class, 'createBulk']);
+Route::post('/messages/create', [MessageController::class, 'create']);
+Route::get('/messages/read', [MessageController::class, 'read']);
+Route::get('/messages/list', [MessageController::class, 'list']);
