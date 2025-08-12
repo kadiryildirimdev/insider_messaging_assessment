@@ -11,10 +11,19 @@ use App\Requests\ReadMessageRequest;
 use OpenApi\Annotations as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ *
+ */
 class MessageController extends Controller
 {
+    /**
+     * @var MessageServiceInterface
+     */
     protected MessageServiceInterface $messageService;
 
+    /**
+     * @param MessageServiceInterface $messageService
+     */
     public function __construct(MessageServiceInterface $messageService)
     {
         $this->messageService = $messageService;
@@ -111,7 +120,7 @@ class MessageController extends Controller
      *     )
      * )
      *
-    */
+     */
     public function read(ReadMessageRequest $request): JsonResponse
     {
         return $this->messageService->read($request);

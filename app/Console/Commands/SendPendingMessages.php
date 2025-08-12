@@ -7,20 +7,38 @@ use App\Jobs\SendMessageJob;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
+/**
+ *
+ */
 class SendPendingMessages extends Command
 {
+    /**
+     * @var string
+     */
     protected $signature = 'message:send-pending';
 
+    /**
+     * @var string
+     */
     protected $description = 'Gönderilmemiş mesajları kuyrukta işlemek için komut';
 
+    /**
+     * @var MessageRepositoryInterface
+     */
     protected MessageRepositoryInterface $messageRepository;
 
+    /**
+     * @param MessageRepositoryInterface $messageRepository
+     */
     public function __construct(MessageRepositoryInterface $messageRepository)
     {
         parent::__construct();
         $this->messageRepository = $messageRepository;
     }
 
+    /**
+     * @return int
+     */
     public function handle()
     {
         $pendingMessages = $this->messageRepository->getPendingMessages();

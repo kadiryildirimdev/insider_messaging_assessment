@@ -15,17 +15,34 @@ use App\Response\BaseResponse;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ *
+ */
 class MessageService implements MessageServiceInterface
 {
+    /**
+     * @var BaseResponse
+     */
     protected BaseResponse $response;
+    /**
+     * @var MessageRepositoryInterface
+     */
     protected MessageRepositoryInterface $messageRepository;
 
+    /**
+     * @param BaseResponse $response
+     * @param MessageRepositoryInterface $messageRepository
+     */
     public function __construct(BaseResponse $response, MessageRepositoryInterface $messageRepository)
     {
         $this->response = $response;
         $this->messageRepository = $messageRepository;
     }
 
+    /**
+     * @param CreateBulkMessageRequest $request
+     * @return JsonResponse
+     */
     public function createBulk(CreateBulkMessageRequest $request): JsonResponse
     {
         try {
@@ -33,22 +50,19 @@ class MessageService implements MessageServiceInterface
 
             $userType = $this->messageRepository->findUserTypeByCode($request->get('user_type_code'));
 
-            if($userType === null)
-            {
+            if ($userType === null) {
                 return $this->response->readResponse();
             }
 
             $users = $this->messageRepository->getUsersByUserType($userType->id);
 
-            if($users === [])
-            {
+            if ($users === []) {
                 return $this->response->readResponse();
             }
 
             $messageStatus = $this->messageRepository->findMessageStatusByCode(MessageStatusEnum::NOT_SENT->value);
 
-            if($messageStatus === null)
-            {
+            if ($messageStatus === null) {
                 return $this->response->readResponse();
             }
 
@@ -78,6 +92,10 @@ class MessageService implements MessageServiceInterface
         }
     }
 
+    /**
+     * @param CreateMessageRequest $request
+     * @return JsonResponse
+     */
     public function create(CreateMessageRequest $request): JsonResponse
     {
         try {
@@ -85,8 +103,7 @@ class MessageService implements MessageServiceInterface
 
             $messageStatus = $this->messageRepository->findMessageStatusByCode(MessageStatusEnum::NOT_SENT->value);
 
-            if($messageStatus === null)
-            {
+            if ($messageStatus === null) {
                 return $this->response->readResponse();
             }
 
@@ -115,6 +132,10 @@ class MessageService implements MessageServiceInterface
         }
     }
 
+    /**
+     * @param ReadMessageRequest $request
+     * @return JsonResponse
+     */
     public function read(ReadMessageRequest $request): JsonResponse
     {
         $message = $this->messageRepository->read($request->get('id'));
@@ -128,6 +149,10 @@ class MessageService implements MessageServiceInterface
         return $this->response->readResponse($dto->toArray());
     }
 
+    /**
+     * @param ListMessageRequest $request
+     * @return JsonResponse
+     */
     public function list(ListMessageRequest $request): JsonResponse
     {
         $messages = $this->messageRepository->list($request->toArray());

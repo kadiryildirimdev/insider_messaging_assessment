@@ -9,12 +9,24 @@ use App\DTOs;
  */
 class MessageDTO extends BaseDTO
 {
+    /**
+     * @var array|null[]|null
+     */
     public ?array $message_status;
 
+    /**
+     * @var array|null[]|null
+     */
     public ?array $user_type;
 
+    /**
+     * @var string|mixed
+     */
     public string $content;
 
+    /**
+     * @var array|null
+     */
     public ?array $message_receivers;
 
 
@@ -30,12 +42,12 @@ class MessageDTO extends BaseDTO
             'name' => $data['message_status']['name'] ?? null,
         ] : null;
 
-        if(isset($data['user_type'])){
+        if (isset($data['user_type'])) {
             $this->user_type = [
                 'id' => $data['user_type']['id'] ?? null,
                 'name' => $data['user_type']['name'] ?? null,
             ];
-        }else{
+        } else {
             $this->user_type = null;
         }
 

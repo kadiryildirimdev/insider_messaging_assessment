@@ -9,14 +9,29 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
+/**
+ *
+ */
 class SendSingleMessage extends Command
 {
+    /**
+     * @var string
+     */
     protected $signature = 'message:send {phone_number} {content}';
 
-    protected $description = 'Tek mesaj gönderimi: DB kaydı ve queue dispatch';
+    /**
+     * @var string
+     */
+    protected $description = 'Komut ile tekli mesaj gönderme işlemi';
 
+    /**
+     * @var MessageRepositoryInterface
+     */
     protected MessageRepositoryInterface $messageRepository;
 
+    /**
+     * @param MessageRepositoryInterface $messageRepository
+     */
     public function __construct(MessageRepositoryInterface $messageRepository)
     {
         parent::__construct();
