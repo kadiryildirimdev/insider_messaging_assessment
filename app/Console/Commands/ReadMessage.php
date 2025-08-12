@@ -62,9 +62,14 @@ class ReadMessage extends Command
 
         $message = $this->messageRepository->read($data['id']);
 
-        $result = new MessageDTO($message?->toArray());
+        if($message === null){
+            return CommandAlias::FAILURE;
+        }
+
+        $result = new MessageDTO($message->toArray());
+
         print_r($result);
 
-        return $result;
+        return CommandAlias::SUCCESS;
     }
 }

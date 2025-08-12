@@ -26,8 +26,29 @@ REDIS_HOST=127.0.0.1
 REDIS_PASSWORD=null
 REDIS_PORT=6380
 ```
+## Veritabanı Migration ve Seed
+
+Veritabanı tabloları migration ile oluşturulmaktadır. Migration çalıştırmak için:
+````bash
+php artisan migrate --seed
+````
+
+## Birim ve Entegrasyon Testleri
+
+Birim ve Entegrasyon testlerini çalıştırmak için:
+````bash
+php artisan test
+````
 
 ## Artisan Komutları
+
+## Queue Başlatma
+
+Bunun için manuel olarak aşağıdaki komut çalıştırılır:
+
+````bash
+php artisan queue:work
+````
 
 ## Otomatik Mesaj Gönderimi
 
@@ -81,20 +102,9 @@ Route::get('/messages/read', [MessageController::class, 'read']);
 ## API Dokümantasyonu (Swagger)
 
 API endpointleri Swagger/OpenAPI ile dokümante edilmiştir. Dokümana aşağıdaki URL’den erişebilirsiniz:
-````
-{url}/api/documentation
-````
+[http://127.0.0.1:8000/api/documentation](http://127.0.0.1:8000/api/documentation)
 
-## Birim ve Entegrasyon Testleri
+## WebHook Bilgisi
 
-Birim ve Entegrasyon testlerini çalıştırmak için:
-````bash
-php artisan test
-````
-
-## Veritabanı Migration ve Seed
-
-Veritabanı tabloları migration ile oluşturulmaktadır. Migration çalıştırmak için:
-````bash
-php artisan migrate --seed
-````
+Aşağıdaki URL üzerinden webhook'a erişebilirsiniz.
+[https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54](https://webhook.site/941d0349-33ed-43a1-8620-a8883bba2f54)
