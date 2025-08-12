@@ -80,12 +80,39 @@ class MessageService implements MessageServiceInterface
 
     public function create(CreateMessageRequest $request): JsonResponse
     {
-        // TODO: Implement create() method.
-    }
+        try {
+            DB::beginTransaction();
 
-    public function update(string $id, array $data): JsonResponse
-    {
-        // TODO: Implement create() method.
+            $messageStatus = $this->messageRepository->findMessageStatusByCode(MessageStatusEnum::NOT_SENT->value);
+
+            if($messageStatus === null)
+            {
+                return $this->response->readResponse();
+            }
+
+            $request->merge(['ref_message_status' => $messageStatus->id]);
+            $request->merge(['message_receivers' => [$request->get('phone_number')]]);
+
+            $message = $this->messageRepository->create($request->toArray());
+
+            if ($message === null) {
+                DB::rollback();
+                return $this->response->createResponse(status: false, httpCode: 400);
+            }
+
+            $message = $this->messageRepository->read($message->id);
+
+            $dto = new MessageDTO($message->toArray());
+
+            DB::commit();
+
+            SendMessageJob::dispatch($message->id);
+
+            return $this->response->createResponse(data: $dto->toArray());
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return $this->response->createResponse(status: false, httpCode: 400);
+        }
     }
 
     public function read(ReadMessageRequest $request): JsonResponse

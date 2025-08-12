@@ -9,9 +9,9 @@ use App\DTOs;
  */
 class MessageDTO extends BaseDTO
 {
-    public array $message_status;
+    public ?array $message_status;
 
-    public array $user_type;
+    public ?array $user_type;
 
     public string $content;
 
@@ -30,10 +30,14 @@ class MessageDTO extends BaseDTO
             'name' => $data['message_status']['name'] ?? null,
         ] : null;
 
-        $this->user_type = isset($data['user_type']) ? [
-            'id' => $data['user_type']['id'] ?? null,
-            'name' => $data['user_type']['name'] ?? null,
-        ] : null;
+        if(isset($data['user_type'])){
+            $this->user_type = [
+                'id' => $data['user_type']['id'] ?? null,
+                'name' => $data['user_type']['name'] ?? null,
+            ];
+        }else{
+            $this->user_type = null;
+        }
 
         $this->content = $data['content'];
 
@@ -41,10 +45,10 @@ class MessageDTO extends BaseDTO
             $receivers = null;
             foreach ($data['message_receivers'] as $receiver) {
                 $receivers[] = [
-                    'id' => $receiver['user']['id'],
-                    'full_name' => $receiver['user']['full_name'],
-                    'phone_number' => $receiver['user']['phone_number'],
-                    'email' => $receiver['user']['email'],
+                    'id' => $receiver['user']['id'] ?? null,
+                    'full_name' => $receiver['user']['full_name'] ?? null,
+                    'phone_number' => $receiver['phone_number'],
+                    'email' => $receiver['user']['email'] ?? null,
                     'sent_at' => $receiver['sent_at'] ?? null,
                 ];
             }

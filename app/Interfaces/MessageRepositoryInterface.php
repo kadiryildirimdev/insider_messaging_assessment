@@ -13,8 +13,6 @@ interface MessageRepositoryInterface
 
     public function create(array $data): ?Message;
 
-    public function update(string $id, array $data): bool;
-
     public function read(string $id): ?Message;
 
     public function list(array $data);

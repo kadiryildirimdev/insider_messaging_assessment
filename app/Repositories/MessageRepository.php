@@ -42,24 +42,8 @@ class MessageRepository implements MessageRepositoryInterface
             return $message;
 
         }catch (\Exception $exception){
+            dd($exception);
             return null;
-        }
-    }
-
-    public function update(string $id, array $data): bool
-    {
-        try{
-            $message = Message::where('id', $id)->first();
-
-            if ($message === null) {
-                return false;
-            }
-
-            $message->update($data);
-
-            return $message->save();
-        }catch (\Exception $exception){
-            return false;
         }
     }
 

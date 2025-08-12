@@ -14,8 +14,6 @@ interface MessageServiceInterface
 
     public function create(CreateMessageRequest $request): JsonResponse;
 
-    public function update(string $id, array $data): JsonResponse;
-
     public function read(ReadMessageRequest $request): JsonResponse;
 
     public function list(ListMessageRequest $request): JsonResponse;

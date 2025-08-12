@@ -1,0 +1,170 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Insider Messaging Assessment",
+        "description": "Insider Messaging Assessment için geliştirilmiş uygulama.",
+        "contact": {
+            "email": "me@kadirdev.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/messages/createBulk": {
+            "post": {
+                "tags": [
+                    "createBulk"
+                ],
+                "summary": "Create bulk messages",
+                "operationId": "c71881de7ec32d1779a9a897ea7a0b61",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "user_type_code": {
+                                        "type": "string",
+                                        "enum": [
+                                            "00001",
+                                            "00002",
+                                            "00003",
+                                            "00004"
+                                        ]
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "maxLength": 150,
+                                        "minLength": 1,
+                                        "example": "Test Mesajı"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/messages/create": {
+            "post": {
+                "tags": [
+                    "create"
+                ],
+                "summary": "Create single message",
+                "operationId": "c71881de7ec32d1779a9a897ea7a0b62",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "maxLength": 150,
+                                        "minLength": 1,
+                                        "example": "Test Mesajı"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "maxLength": 14,
+                                        "minLength": 14,
+                                        "example": "00905538876292"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/messages/read": {
+            "get": {
+                "tags": [
+                    "read"
+                ],
+                "summary": "Read message details",
+                "operationId": "c71881de7ec32d1779a9a897ea7a0b63",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "Mesaj UUID değeri",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "/api/messages/list": {
+            "get": {
+                "tags": [
+                    "list"
+                ],
+                "summary": "List of messages",
+                "operationId": "c71881de7ec32d1779a9a897ea7a0b64",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Sayfa numarası",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Sayfa başına gösterilecek kayıt sayısı",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "createBulk",
+            "description": "createBulk"
+        },
+        {
+            "name": "create",
+            "description": "create"
+        },
+        {
+            "name": "read",
+            "description": "read"
+        },
+        {
+            "name": "list",
+            "description": "list"
+        }
+    ]
+}
