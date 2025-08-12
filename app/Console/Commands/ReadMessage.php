@@ -2,25 +2,35 @@
 
 namespace App\Console\Commands;
 
+use App\DTOs\MessageDTO;
 use App\Interfaces\MessageRepositoryInterface;
-use App\Jobs\SendMessageJob;
 use App\Requests\CreateMessageRequest;
+use App\Requests\ReadMessageRequest;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
-class SendSingleMessage extends Command
+class ReadMessage extends Command
 {
-    protected $signature = 'message:send {phone_number} {content}';
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'message:read {id}';
 
-    protected $description = 'Tek mesaj gönderimi: DB kaydı ve queue dispatch';
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'ID veya Telefon numarası ile mesaj görüntüleme';
 
     protected MessageRepositoryInterface $messageRepository;
 
     public function __construct(MessageRepositoryInterface $messageRepository)
     {
         parent::__construct();
-
         $this->messageRepository = $messageRepository;
     }
 
@@ -30,11 +40,10 @@ class SendSingleMessage extends Command
     public function handle()
     {
         $data = [
-            'content' => $this->argument('content'),
-            'phone_number' => $this->argument('phone_number'),
+            'id' => $this->argument('id')
         ];
 
-        $validator = Validator::make($data, (new CreateMessageRequest())->rules());
+        $validator = Validator::make($data, (new ReadMessageRequest())->rules());
 
         if ($validator->fails()) {
             foreach ($validator->errors()->all() as $error) {
@@ -43,16 +52,13 @@ class SendSingleMessage extends Command
             return CommandAlias::FAILURE;
         }
 
-        $message = $this->messageRepository->create($data);
+        $message = $this->messageRepository->read($data['id']);
 
-        if ($message === null) {
-            return CommandAlias::FAILURE;
-        }
+//        print_r(
+//            "\r\n Mesaj: " . $message->content . "\r\n"
+//        );
 
-        print_r("\r\nMesaj ve alıcı oluşturuldu, gönderim kuyruğa eklendi.\r\n");
-
-        SendMessageJob::dispatch($message->id);
-
-        return CommandAlias::SUCCESS;
+        $result = new MessageDTO($message->toArray());
+        print_r($result);
     }
 }

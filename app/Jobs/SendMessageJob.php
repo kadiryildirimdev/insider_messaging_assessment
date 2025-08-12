@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Random\RandomException;
 
@@ -48,31 +48,43 @@ class SendMessageJob implements ShouldQueue
         $pendingReceivers = $message->messageReceivers()->whereNull('sent_at')->limit(2)->get();
 
         foreach ($pendingReceivers as $receiver) {
-            if ($receiver->sent_at === null) {
-                $result = $this->sendMessage();
+            $result = $this->sendMessage();
 
-                if ($result !== null) {
-                    $receiver->transaction_id = $result;
-                    $receiver->sent_at = \Carbon\Carbon::now();
-                    $receiver->save();
-                    Log::info("GÖNDERME BAŞARILI ---> Mesaj #{$message->id} {$receiver->phone_number} numarasına mesaj gönderildi.");
-                }else{
-                    Log::warning("GÖNDERME BAŞARISIZ ---> Mesaj #{$message->id} {$receiver->phone_number} numarasına mesaj gönderilemedi.");
-                }
+            if ($result !== null) {
+                $now = \Carbon\Carbon::now();
+                $receiver->transaction_id = $result;
+                $receiver->sent_at = $now;
+                $receiver->save();
+                print_r("\r\nGÖNDERME BAŞARILI ---> Mesaj #" . $message->id . " " . $receiver->phone_number . " numarasına mesaj gönderildi.\r\n");
+                $counter--;
+
+                Cache::store('redis')->put("message_{$message->id}", [
+                    'message_id' => $message->id,
+                    'message_receiver_id' => $receiver->id,
+                    'sent_at' => $now,
+                ], 3600);
+            } else {
+                print_r("\r\nGÖNDERME BAŞARISIZ ---> Mesaj #{$message->id} {$receiver->phone_number} numarasına mesaj gönderilemedi.\r\n");
             }
         }
 
-        $messageStatus = $messageRepository->findMessageStatusByCode(MessageStatusEnum::SENT->value);
+        if ($counter === 0) {
+            $messageStatus = $messageRepository->findMessageStatusByCode(MessageStatusEnum::SENT->value);
+        } else {
+            $messageStatus = $messageRepository->findMessageStatusByCode(MessageStatusEnum::PARTIAL_SENT->value);
+        }
 
         $message->ref_message_status = $messageStatus?->id;
         $message->save();
 
         if ($flag) {
             sleep(5);
-            Log::info("Kuyrukta bekleyen {$counter} adet gönderim mevcut. Kuyruk tekrar çalıştırılıyor.");
+            print_r("\r\nKuyrukta bekleyen {$counter} adet gönderim mevcut. Kuyruk tekrar çalıştırılıyor.\r\n");
 
             self::dispatch($message->id);
         }
+
+        print_r("\r\nKuyrukta bekleyen gönderimler tamamlandı.\r\n");
     }
 
     /**
@@ -82,10 +94,9 @@ class SendMessageJob implements ShouldQueue
      */
     public function sendMessage(): ?string
     {
-
         // TODO: sending message will be implemented in this function
-        $result = (bool) random_int(0, 1);
-        if($result){
+        $result = (bool)random_int(0, 1);
+        if ($result) {
             return Str::uuid();
         }
 

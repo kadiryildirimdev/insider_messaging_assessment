@@ -32,6 +32,14 @@ class MessagesStatusesTableSeed extends Seeder
                     'created_at' => $now,
                     'updated_at' => $now,
                     'active' => true,
+                ],
+                [
+                    'id' => Str::uuid(),
+                    'code' => '00003',
+                    'name' => 'Kısmı Gönderim',
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                    'active' => true,
                 ]
             ]
         );

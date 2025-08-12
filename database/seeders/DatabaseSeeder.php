@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
          * Sample Data
          */
         $this->call(UsersTableSeed::class);
+        $this->call(MessagesTableSeed::class);
     }
 }

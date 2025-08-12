@@ -5,10 +5,11 @@ namespace App\Console\Commands;
 use App\Interfaces\MessageRepositoryInterface;
 use App\Jobs\SendMessageJob;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class SendPendingMessages extends Command
 {
-    protected $signature = 'messages:send-pending';
+    protected $signature = 'message:send-pending';
 
     protected $description = 'Gönderilmemiş mesajları kuyrukta işlemek için komut';
 
@@ -24,17 +25,22 @@ class SendPendingMessages extends Command
     {
         $pendingMessages = $this->messageRepository->getPendingMessages();
 
-        foreach ($pendingMessages as $message) {
-            if ($message->messageReceivers->isEmpty()) {
-                $this->info('Gönderilecek mesaj yok.');
-                return 0;
-            }
-            SendMessageJob::dispatch($message->id);
-            $this->info("Mesaj #{$message->id} gönderim için kuyruğa alındı.");
+        if ($pendingMessages === null || $pendingMessages->isEmpty()) {
+            print_r("\r\nGönderilecek mesaj yok.\r\n");
+            return CommandAlias::SUCCESS;
         }
 
-        $this->info('Tüm gönderilmemiş mesajlar işlendi.');
+        foreach ($pendingMessages as $message) {
+            if ($message->messageReceivers->isEmpty()) {
+                print_r("\r\nGönderilecek mesaj yok.\r\n");
+                return CommandAlias::SUCCESS;
+            }
+            print_r("\r\nMesaj #{$message->id} gönderim için kuyruğa alındı.\r\n");
+            SendMessageJob::dispatch($message->id);
+        }
 
-        return 0;
+        print_r("\r\nTüm gönderilmemiş mesajlar işlendi.\r\n");
+
+        return CommandAlias::SUCCESS;
     }
 }
